@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>libqmarkedscrollbar</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>Marked Scroll Bars in Qt</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Tools » libqmarkedscrollbar
+    </div>
+    <p><tt>libqmarkedscrollbar</tt> is an open source (<a href="http://www.gnu.org/licenses/lgpl-3.0.html">GNU LGPLv3+</a>) library that provides <em>marked scroll bars</em> for Qt. Marked scroll bars function in much the same way as regular scroll bars except that they support small lines or <em>marks</em> on the scroll track. These marks can be used to indicate various points of interest to the user.</p>
+    <p>Applications of marked scroll bars include</p>
+    <ul>
+      <li>to indicate the location of compiler errors/warnings in source code;</li>
+      <li>to show the user where s/he has been highlighted in an chat window.</li>
+    </ul>
+    <p>The library also provides support for <em>shades</em>. While a mark identifies a single point in a document/view a shade identifies a range. Shades have applications in graphical diff programs (highlighting regions of difference) and collaborative text editors (to show per-user selections) to name but a few.</p>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#news">News</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#bugs#">Bugs</a></li>
+      <li><a href="#screenshots">Screenshots</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#documentation">Documentation</a></li>
+    </ul>
+    <h2><a name="news">News</a></h2>
+    <h3>2009-04-15: First public release</h3>
+    <p>This is the first public release of libqmarkedscrollbar. Source can be found from the <a href="#download">download</a> section.</p>
+    <h2><a name="features">Features</a></h2>
+    <p>As of version 0.1 libqmarkedscrollbar supports:</p>
+    <ul>
+      <li>marks and shades on both horizontal and vertical scroll bars;</li>
+      <li>separate colours for each mark/shade;</li>
+      <li>unique identifiers for each mark/shade, allowing for easy removal at a later date.</li>
+    </ul>
+    <h2><a name="bugs">Bugs</a></h2>
+    <h3>Rendering of shades is suboptimal with clipping</h3>
+    <p>On platforms which use a rounded slider (such as Mac OS X) the rendering of shades suboptimal when clipping is enabled <code>enableClipping(true)</code>.</p>
+    <p>This is because shades are drawn <em>after</em> the scroll bar with the bounding rectangle of the slider used for clipping. In the case where the slider is not a rectangle this results in the scroll bar track 'leaking' through the shade. It is an issue with Qt that I currently know no way of working around.</p>
+    <h2><a name="screenshots">Screenshots</a></h2>
+    <ul class="image-list">
+      <li>
+        <img src="images/libqmarkedscrollbar-0.1-gtk.png" width="441" height="46" alt="libqmarkedscrollbar 0.1" /><br />
+        Version 0.1 under Linux with the GTK+ Qt theme (4.5.0).
+      </li>
+    </ul>
+    <h2><a name="download">Download</a></h2>
+    <h3>Git</h3>
+    <p>The latest version can always be downloaded from the projects <a href="https://github.com/FreddieWitherden/libqmarkedscrollbar">git repository</a>.</p>
+    <h3>0.1 — 2009-04-15</h3>
+    <dl>
+      <dt>Source code.</dt>
+      <dd><a href="releases/libqmarkedscrollbar-0.1.zip">.zip</a> — 18.7 KiB</dd>
+      <dd><a href="releases/libqmarkedscrollbar-0.1.tar.gz">.tar.gz</a> — 16.6 KiB</dd>
+      <dd><a href="releases/libqmarkedscrollbar-0.1.tar.bz2">.tar.bz2</a> — 15.1 KiB</dd>
+    </dl>
+    <h2><a name="documentation">Documentation</a></h2>
+    <p>Complete <em>Doxygen</em> documentation for the library can be found at <a href="doxygen/">here</a>.</p>
+    <div id="footer">
+      Copyright (©) 2015 by Freddie Witherden; last updated 2015-02-07.
+    </div>
+  </body>
+</html>
+

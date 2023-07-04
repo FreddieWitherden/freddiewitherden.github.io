@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-gb" xml:lang="en-gb">
+  <head>
+    <title>libforensic1394 Virtual Bus</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="../../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>libforensic1394 Virtual Bus</h1>
+    <div id="breadcrumbs">
+      <a href="../../../">Home</a> » Tools
+      » <a href="../">libforensic1394</a> » f1394vbus
+    </div>
+    <p>Unfortunately, Microsoft Windows does not provide a user-mode
+    interface to the IEEE 1394 stack. Correspondingly, it was
+    therefore necessary to write a kernel-mode
+    driver—the <em>libforensic1394 virtual bus</em>—in order to port
+    libforensic1394 to Windows. Herein referred to as
+    <em>f1394vbus</em> it functions by exposing elements of Microsofts
+    IEEE 1394 stack to user-mode applications. The driver, released
+    under the <a href="http://www.gnu.org/licenses/gpl-3.0.html">GNU
+    GPLv3+</a>, is written against the Windows Driver Foundation (WDF)
+    and supports Windows XP or later.</p>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#news">News</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#uninstallation">Uninstallation</a></li>
+      <li><a href="#history">History</a></li>
+    </ul>
+    <h2><a name="news">News</a></h2>
+    <h2><a name="faq">FAQ</a></h2>
+    <dl>
+      <dt>Are 64-bit (x64) versions of Windows supported?</dt>
+      <dd>The installer provided contains both 32- and 64-bit versions
+      of the driver (with the appropriate one being selected
+      automatically). Moreover, the interface exported by the 64-bit
+      driver is ‘32-bit clean’ allowing for 32-bit builds of
+      libforensic1394 to be used on 64-bit versions of Windows.</dd>
+      <dt>Can I use f1394vbus in my own application?</dt>
+      <dd>In principle yes, however, the interface exported by
+      f1394vbus is extremely minimal—providing only the functionality
+      required by libforensic1394. Many features, including address
+      range allocation and isochronous transfers are not supported. In
+      addition, it is worth noting that although the driver itself is
+      released under the GNU GPLv3+ there are no restrictions on the
+      use of the driver’s interface. (As it operates using IOCTLs as
+      opposed to calls to linked functions.)</dd>
+      <dt>What restrictions are there on the installation binaries?</dt>
+      <dd>Although the source code is open source the installer
+      binaries available on this site come with the additional
+      restriction that they <em>may not be bundled or included in any
+      piece of commercial software</em>. This is because as the
+      binaries signed using my personal digital signature bundling may
+      lead to an unwanted associated between myself and your
+      company. However, as the driver is open source you are free to
+      build (and sign) your own installer.</dd>
+    </dl>
+    <h2><a name="download">Download</a></h2>
+    <h2><a name="uninstallation">Uninstallation</a></h2>
+    <p>The driver relies on
+    the <a href="http://msdn.microsoft.com/en-us/library/ff544842%28VS.85%29.aspx">DPInst</a>
+    utility for installing f1394vbus.</p>
+    <h2><a name="history">History</a></h2>
+    <p>The libforensic1394 virtual bus driver was originally written
+    in the months of September–October 2010 while porting
+    libforensic1394 to the Microsoft Windows platform. The driver is
+    based off of the <em>1394 vdev hybrid</em> sample in the Windows
+    DDK, albeit with extensive modifications to both the API and
+    implementation.</p>
+    <div id="footer">
+      Copyright (©) 2010 by Freddie Witherden; last updated 2010-10-15.
+    </div>
+  </body>
+</html>

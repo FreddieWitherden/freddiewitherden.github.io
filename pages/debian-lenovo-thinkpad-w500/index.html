@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Debian GNU/Linux on a Lenovo Thinkpad W500</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>Debian GNU/Linux on a Lenovo Thinkpad W500</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Pages » Debian on a Lenovo Thinkpad W500
+    </div>
+    <h2>Introduction &amp; The Story So Far</h2>
+    <p>My very first laptop was an 14" Apple iBook G4 purchased in the summer of 2005. For a grand total of £1280 I was bestowed with a 1.33Ghz G4 processor, 1.25GiB of memory and a Radeon 9200 graphics chip. Although somewhat dated this was made up for by a gargantuan 61 Watt-hour battery—providing 5:30 hours of wireless productivity—and an impeccable design. The only real complaint I had was with the low (1024×768) display resolution.</p>
+    <p>Almost three years later I accidentally knocked a glass of water over the keyboard. One of the few problems with the iBooks design is that there is very little in-between the keyboard and the logic-board. This gave the water a free-ride into the system. The iBook did not survive the ordeal. This was replaced with a 13.3" polycarbonate MacBook. Sporting a 2.4Ghz Core 2 processor, 2GiB of memory and a 1280×800 WXGA screen it was—at least on paper—a big improvement over my iBook. However, I struggled to get used to the redesigned keyboard. This made using the MacBook a very unpleasant experience. After using it for just over a year I decided to look for a replacement.</p>
+    <p>With my work-flow becoming increasingly Linux based I decided that any replacement for my MacBook, Apple or otherwise, must be fully functional under GNU/Linux</p>
+    <h2>Settling on a Lenovo Thinkpad</h2>
+    <p>While Apple's offerings had improved considerably since I purchased my MacBook the keyboard had not. Not even the 15% student discount on their Pro range was enough to draw me back. Hence after much deliberation I decided on an Lenovo ThinkPad W500.</p>
+    <p>The 15.4" W500 is very similar to the T500. The service manuals for the two are identical. The main advantage the W500 has over the T500 (other than ISV certification) is that it can be configured with a 1920×1200 WUXGA screen as opposed to the 1680×1050 WSXGA+ screen on the T500. Purchased directly from Lenovo's website my W500 shipped with:</p>
+    <ul>
+      <li>a 2.8Ghz Core 2 Duo (T9600);</li>
+      <li>6GiB of DDR3 memory;</li>
+      <li>Intel GMA4500HD and ATI FireGL 5700 (a fancy 3650) with DisplayPort;</li>
+      <li>128GiB Samsung MLC SSD;</li>
+      <li>Blu-ray rewriter;</li>
+      <li>54mm ExpressCard slot and an integrated smart card reader;</li>
+      <li>WiFi/Bluetooth/3G/GPS for wireless connectivity;</li>
+      <li>the usual selection of USB/Firewire/Ethernet ports;</li>
+      <li>SD card reader;</li>
+      <li>Authentec 2810 fingerprint reader;</li>
+      <li>Synaptics touchpad and 'nipple' mouse;</li>
+      <li>a laden weight of 2.7kg.</li>
+    </ul>
+    <p>All of this did not come cheap. For the same price I could have purchased (with my student discount) <strong>three</strong> 13.3" MacBook Pro's. Saying that I am not sure what exactly I would do with three MacBook Pro's!</p>
+    <h2>Design &amp; Build Quality</h2>
+    <p>Overall I am very impressed with the design of the W500 and even more so with build quality. Particularly noteworthy is the presence of a DisplayPort connector. The primary advantage this has over HDMI is that DisplayPort is able to drive much higher resolution displays—including 30" 2560×1600 panels. Further DisplayPort-to-DVI/HDMI adapters are readily available. Due to a chipset limitation audio output is not supported. This leaves the W500 without any digital audio outputs. A legacy VGA connector is also provided.</p>
+    <p>As configured the W500 features two graphics adapters: an integrated Intel GMA4500HD and a discrete ATI FireGL 5700. The FireGL chip delivers much improved performance at the cost of reduced battery life. Under Windows Vista/7 it possible to switch between the two on-the-fly. No support for this is provided by X.org. It is however possible to configure which card to use in the BIOS. While both adapters are capable of driving the VGA port only the discrete ATI adapter is wired into the DisplayPort. The only other part of the design not supported under Linux is the fingerprint reader. Since most Linux users know better than to rely on fingerprints for identification I doubt this will be a deal-breaker.</p>
+    <p>Lenovo, like Apple, uses Samsung for their solid state drives. When I was purchasing my ThinkPad Lenovo were offering the drive at a significantly reduced price. While performance is satisfactory the drive is <a href="http://www.anandtech.com/storage/showdoc.aspx?i=3631&amp;p=19">not without its problems</a>. It would be nice if Lenovo provided Intel's X25-M as an alternative.</p>
+    <p>The 147 DPI WUXGA screen is very reasonable. Although not as bright as the screen in my MacBook the colour reproduction and viewing angles are far superior.</p>
+    <p>Expansion wise the system includes a 54mm ExpressCard slot and a <em>serial ultrabay slim</em>. The ultrabay is a hot-swappable device bay usually occupied by the optical drive. However it is possible to swap the drive out for either an extended battery (3 cell) or a 2.5" S-ATA caddy.</p>
+    <p>The W500's keyboard is one of the best I have ever used. Period. The keys are well spaced and give excellent feedback when hit. Moreover there is almost no flex. The Synaptics touchpad is quite reasonable although lacks multi-finger detection. The <a href="http://xkcd.com/243/">TrackPoint/nub/nipple/clit</a> mouse takes some getting used to. Both devices support scrolling and tap-to-click once correctly configured. Having a good selection of <em>human interface devices</em> is quite important to me since I do not carry a USB mouse. As part of the package Lenovo also include <a href="http://lenovoblogs.com/designmatters/?p=46">two alternative</a> TrackPoint caps.</p>
+    <p>On the wireless connectivity front the system fares very well. The Intel WiFi Link 5300 is b/g/n compliant and enjoys good Linux support. The Bluetooth adapter is also well supported. Finally there is an Ericsson F3507g 3G and GPS adapter. In the UK this is tied to the Vodafone network and includes a SIM card to that effect. Both 3G and GPS functions are supported.</p>
+    <p>One of the more unique features is the <em>ThinkLight</em>—Lenovo's answer to the backlit keyboard. Put simply it is a small white LED situated above the screen which is controlled by the BIOS. Currently I am undecided as to if this is a gimmick or genuinely useful. In addition to being ISV certified the W500 also features a 56k modem, certifying it for use in the mid-1990s. This makes it ideal for time lords and the such.</p>
+    <h2>Installing Debian</h2>
+    <p>The install process is relatively painless and well documented. I used a Squeeze (Debian testing) netinst CD dated the 20th of September 2009. Before installing it is important to first disable the 'switchable graphics' feature. This can be done in the BIOS. I opted to use the integrated Intel card. For some reason I was unable to get the text-mode installer to work: the system would hang after setting the console font. The graphical installer worked fine, however. Other than that the hardware presented no problems to the installer.</p>
+    <h3>Partitioning</h3>
+    <p>Since everyone has their own idiosyncratic way of partitioning disks here is how I went about it. As this is a portable device some form of data encryption is a necessity. While Debian does support various forms of full disk encryption all of them come with usability trade-offs. So instead I opted just to encrypt my home directory/partition. This is relatively easy to accomplish and allows for ones logon password to act as the decryption key. (So the partition is transparently mounted/un-mounted upon logging in/out.) This requires a separate home partition. In order to avoid having to guess the required partition sizes I used LVM. This makes it easy to resize partitions at a later date should the need arise. Further benefits of LVM can be found <a href="http://tldp.org/HOWTO/LVM-HOWTO/benefitsoflvmsmall.html">here</a>.</p>
+    <p>As the system has 6GiB of RAM I decided not to create a swap partition.</p>
+    <p>To this end I partitioned the drive into two primary partitions: a 256MiB Ext2 boot partition and a 119GiB LVM volume. Inside of the LVM volume I created a 15GiB Ext4 root parition and an empty 25GiB partition.</p>
+    <h2>Configuring The System</h2>
+    <h3>Home directory encryption</h3>
+    <p>There are many guides explaining how to set up an encrypted home directory. The one at <a href="https://we.riseup.net/debian/automatically-mount-encrypted-home">Debian grimoire</a> is particularly accessible.</p>
+    <h3>WiFi</h3>
+    <p>Complete instructions on setting up the Intel WiFi Link 5300 can be found on the <a href="http://wiki.debian.org/iwlagn">Debian wiki</a>.</p>
+    <h3>Synaptics touchpad</h3>
+    <p>With the release of Lenny Debian has been slowly moving away from explicit X.org configuration files. This means that by default there is no /etc/X11/xorg.conf file—instead replaced by HAL policy files. Therefore if one wishes to configure the touchpad that a custom policy file is required. An example of such a file can be seen below.</p>
+    <h4>/etc/hal/fdi/policy/x11-synaptics.fdi</h4>
+    <pre>&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+&lt;deviceinfo version="0.2"&gt;
+  &lt;device&gt;
+    &lt;match key="info.capabilities" contains="input.touchpad"&gt;
+      &lt;merge key="input.x11_options.TapButton1" type="string"&gt;1&lt;/merge&gt;
+      &lt;merge key="input.x11_options.FastTaps" type="string"&gt;true&lt;/merge&gt;
+    &lt;/match&gt;
+  &lt;/device&gt;
+&lt;/deviceinfo&gt;</pre>
+    <p>The policy file has the effect of enabling the tap-to-click feature of the touchpad along with the 'fast taps' features. The configuration options are exactly the same as what one would write in xorg.conf. A complete list of options can be found by typing <samp>$ man synaptics</samp>.</p>
+    <h3>TrackPoint</h3>
+    <p>TrackPoint configuration is slightly more convoluted. This is because some of the settings are exposed by the kernel driver and others by the XInput driver. The ThinkWiki project has a page dedicated to <a href="http://www.thinkwiki.org/wiki/How_to_configure_the_TrackPoint">configuring the TrackPoint</a>. While the article provides several mechanisms for setting device attributes I highly recommend the use of udev. When configuring the TrackPoint in my W500 I encountered the following issues:</p>
+    <ul>
+      <li>in order to get the udev rule to match I had to specify the 'kernel' for the device as <samp>KERNEL=="serio2"</samp>;</li>
+      <li>the various attributes for the TrackPoint do not all become available at the same time; hence I was forced to add <samp>WAIT_FOR="press_to_select"</samp> to my rule.</li>
+    </ul>
+    <p>The resulting rules file can be seen below.</p>
+    <h4>/etc/udev/rules.d/10-trackpoint.rules</h4>
+    <pre>KERNEL=="serio2", SUBSYSTEM=="serio", DRIVER=="psmouse", \
+WAIT_FOR="press_to_select", \
+ATTR{press_to_select}="1", ATTR{ztime}="15", ATTR{sensitivity}="180"</pre>
+    <h3>The ultrabay</h3>
+    <p>The serial ultrabay slim is fully supported under Linux and is treated as a generic ACPI bay. Hot swapping devices, including batteries, is fully supported so long as the <a href="http://www.thinkwiki.org/wiki/How_to_hotswap_Ultrabay_devices#Using_libata-acpi_and_udev">correct procedure</a> is followed.</p>
+    <h4>Advanced ultrabay battery III</h4>
+    <p>It is worth pointing out that the advanced ultrabay battery III is not fully supported prior to Linux 2.6.31. With the default 2.6.30 kernel that ships with Squeeze the battery would charge and discharge perfectly but would generate a kernel panic upon ejection.</p>
+    <p>Upgrading to the 2.6.31 kernel in the <em>Experimental</em> branch fixed this issue.</p>
+    <h3>Graphics acceleration</h3>
+    <p>The Intel GMA4500HD is fully supported by the open source Intel drivers. No explicit configuration is necessary. This includes both Xrender and OpenGL. The <kbd>$ glxinfo</kbd> utility reports support for OpenGL 2.1.</p>
+    <p>I am yet to try the discrete ATI adapter. My understanding is that it is supported by all three ATI drivers (radeon, radeonhd and fglrx) to varying degrees.</p>
+    <h2>Conclusion</h2>
+    <p>Overall I am very pleased with my purchase. The hardware enjoys good support under Linux and would not hesitate in recommending it to others.</p>
+    <h2>Links &amp; References</h2>
+    <dl>
+      <dt><a href="http://www.thinkwiki.org/wiki/Category:W500">W500 category on ThinkWiki</a></dt>
+      <dd>A comprehensive resource on installing and configuring Linux on ThinkPads. Some of the information is outdated, however.</dd>
+      <dt><a href="http://wiki.debian.org/InstallingDebianOn/Thinkpad/T400/lenny">Debian Wiki page on T400 installation</a></dt>
+      <dd>While specifically targeted at installing Debian Lenny on a T400 much of the information is relevant to a W500 under Squeeze.</dd>
+    </dl>
+    <div id="footer">
+      Copyright (©) 2009 by Freddie Witherden; last updated: 2010-02-03.
+    </div>
+  </body>
+</html>

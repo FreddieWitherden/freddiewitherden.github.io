@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>BLAS GEMM Benchmarks</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>BLAS GEMM Benchmarks</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Pages » BLAS GEMM Benchmarks
+    </div>
+    <p>In a scientific application I develop we make extensive use of
+    matrix-matrix multiplications.  It is therefore important that
+    these operations are performant.  Highly tuned multiplication
+    kernels are a core component of the <em>basic linear algebra
+    subprograms</em> (BLAS) API.  There exist a wide variety of BLAS
+    implementations—both open source and proprietary—for almost all
+    HPC platforms.</p>
+    <p>What follows are a series of benchmarks for the matrix sizes
+    that arise in our application for a variety of BLAS libraries.  It
+    is hoped that these benchmarks will help users to make informed
+    decisions when deciding on a specific BLAS.</p>
+    <p>The dimensions of the matrices, with the exception of the final
+    test-case (M = N = K = 2048), are all real-world examples taken
+    from my solver.</p>
+    <h2>Methodology</h2>
+    <p>When conducting the benchmarks the following procedures were
+    employed:</p>
+      <ul>
+        <li>all BLAS libraries were compiled/run in <em>serial</em>
+        with all operations running on a single CPU core;</li>
+        <li>each benchmark was repeated 5000 times;</li>
+        <li>the benchmarking process was pinned to the first core on
+        the system;</li>
+        <li>FLOPS were computed using 5000×(2×M×N×K)/Δt where N, M,
+        and K are the relevant dimensions of the matrices and Δt is
+        the wall clock time;</li>
+        <li>all matrices were stored <em>row major</em> order;</li>
+        <li>all matrices were initialised with random values with a
+        consistent seed being used throughout;</li>
+        <li>the GEMM parameters α and β were taken as 1.0 and 0.0
+        respectively;</li>
+        <li>the transpose parameters were both set
+        to <em>CblasNoTrans</em>;</li>
+        <li>all numbers are quoted in <em>gigaflops</em>.</li>
+      </ul>
+    <h2>Core i7 3770K</h2>
+    <p>The following comparison is between ATLAS 3.11.11 and the
+    current Git Head of OpenBLAS.  Both were compiled using GCC 4.7.2
+    on a Gentoo Linux system.  The CPU was a 3.5Ghz Intel Core i7 3770K
+    with turbo-boost (to 3.9Ghz) enabled.  Peak is ~62.7 gigaflops
+    single precision and ~31.4 gigaflops double precision.</p>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="3"></th>
+          <th colspan="2">ATLAS</th>
+          <th colspan="2">OpenBLAS</th>
+        </tr>
+        <tr>
+          <th>M</th><th>N</th><th>K</th>
+          <th>S</th><th>D</th>
+          <th>S</th><th>D</th>
+        </tr>
+      </thead>
+      <tbody class="data">
+        <tr>
+          <td>6</td><td>25000</td><td>3</td><td>8.78</td><td>5.84</td><td>6.20</td><td>4.94</td>
+        </tr>
+        <tr>
+          <td>8</td><td>25000</td><td>4</td><td>11.31</td><td>6.63</td><td>8.83</td><td>6.26</td>
+        </tr>
+        <tr>
+          <td>9</td><td>25000</td><td>6</td><td>15.68</td><td>9.07</td><td>11.51</td><td>8.17</td>
+        </tr>
+        <tr>
+          <td>12</td><td>25000</td><td>9</td><td>20.94</td><td>11.31</td><td>14.25</td><td>10.37</td>
+        </tr>
+        <tr>
+          <td>12</td><td>25000</td><td>10</td><td>21.80</td><td>11.22</td><td>15.18</td><td>10.84</td>
+        </tr>
+        <tr>
+          <td>15</td><td>25000</td><td>15</td><td>26.33</td><td>13.32</td><td>17.54</td><td>12.21</td>
+        </tr>
+        <tr>
+          <td>16</td><td>25000</td><td>16</td><td>22.55</td><td>12.25</td><td>21.51</td><td>13.77</td>
+        </tr>
+        <tr>
+          <td>18</td><td>25000</td><td>21</td><td>25.80</td><td>13.37</td><td>23.02</td><td>14.14</td>
+        </tr>
+        <tr>
+          <td>20</td><td>25000</td><td>25</td><td>24.49</td><td>13.68</td><td>24.29</td><td>15.63</td>
+        </tr>
+        <tr>
+          <td>24</td><td>25000</td><td>8</td><td>24.62</td><td>11.92</td><td>17.77</td><td>11.33</td>
+        </tr>
+        <tr>
+          <td>24</td><td>25000</td><td>36</td><td>24.91</td><td>15.18</td><td>30.73</td><td>17.01</td>
+        </tr>
+        <tr>
+          <td>54</td><td>25000</td><td>27</td><td>28.69</td><td>17.92</td><td>32.09</td><td>17.28</td>
+        </tr>
+        <tr>
+          <td>96</td><td>25000</td><td>64</td><td>35.16</td><td>22.37</td><td>45.17</td><td>22.18</td>
+        </tr>
+        <tr>
+          <td>150</td><td>25000</td><td>125</td><td>40.65</td><td>25.70</td><td>48.41</td><td>25.26</td>
+        </tr>
+        <tr>
+          <td>216</td><td>25000</td><td>216</td><td>53.75</td><td>25.09</td><td>54.18</td><td>27.90</td>
+        </tr>
+        <tr>
+          <td>2048</td><td>2048</td><td>2048</td><td>61.02</td><td>30.37</td><td>61.61</td><td>31.06</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>We note here that ATLAS tends to outperform OpenBLAS when
+    working at single precision until M = 24.  At this point OpenBLAS
+    pulls away; often delivering 20% more FLOPS than ATLAS.</p>
+    <div id="footer">
+      Copyright (©) 2013 by Freddie Witherden; last updated: 2013-07-07.
+    </div>
+  </body>
+</html>

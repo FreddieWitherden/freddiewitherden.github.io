@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Memory Forensics over the IEEE 1394 Interface</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>Memory Forensics over the IEEE 1394 Interface</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Pages » IEEE 1394 Forensics
+    </div>
+    <blockquote><p>The IEEE 1394 “FireWire” interface provides a means
+    for acquiring direct memory access.  We discuss how this can be
+    used to perform live memory forensics on a target system. We also
+    present <em>libforensic1394</em> an open-source software library
+    designed especially for this purpose. Passive and active
+    applications of live memory forensics are analysed. Memory imaging
+    techniques are discussed at length. It is demonstrated how the
+    interface can be used both to dump the memory of a live system and
+    to compromise contemporary operating systems.</p></blockquote>
+    <p>The following paper was written in August 2010 to serve as a
+    complete, up to date, reference on 1394 memory forensics.</p>
+    <ul>
+      <li><a href="../ieee-1394-forensics.pdf">Memory
+      Forensics over the IEEE 1394 Interface</a> (application/pdf)</li>
+    </ul>
+    <h2>libforensic1394</h2>
+    <p>While investigating the IEEE 1394 interface it quickly became
+    apparent that existing libraries were unsuitable for performing
+    memory forensics. The author therefore
+    developed <a href="../../tools/libforensic1394/">libforensic1394</a>
+    specifically for the purpose.</p>
+    <!--<h2>Code Samples</h2>-->
+    <h2>Common Questions and Misconceptions</h2>
+    <p>In the course of conducting preliminary research into the topic
+    several common misconceptions were identified, especially among
+    bloggers.</p>
+    <dl class="faq">
+     <dt>The USB interface can also be used for forensics.</dt>
+     <dd>The USB bus provides no means for acquiring direct memory
+     access to the host system. This is not to say that
+     specific <em>implementations</em> of the interface can not be
+     exploited. As with any piece of software it is possible that a
+     USB stack will contain code which can be exploited by a malicious
+     device. The difference is that these exploits are <em>bugs</em>
+     as opposed to design features.</dd>
+     <dt>Once an attacker has physical access to a system “all bets
+     are off”.</dt>
+     <dd>This is not and should not be the case; countermeasures
+     such as local logon passwords and disk encryption exist <em>for
+     this very reason</em>! While it is true that securing a system
+     against physical access attacks is more difficult it is by no
+     means futile.</dd>
+    </dl>
+    <h2><a name="revision-history">Revision History</a></h2>
+    <dl>
+      <dt><strong>2010-09-07</strong> Public release</dt>
+      <dd>Document
+      ID: <a href="revisions/de4e0555d1274debcdc2ce6a574f2cd5.pdf">de4e0555d1274debcdc2ce6a574f2cd5</a></dd>
+      <dd>Squished a few minor typos.</dd>
+      <dt><strong>2010-09-04</strong> Second public draft</dt>
+      <dd>Document
+      ID: <a href="revisions/c1c615827b7647933e5a3d00668d6183.pdf">c1c615827b7647933e5a3d00668d6183</a></dd>
+      <dd>Enhanced benchmarks; expanded conclusion; added
+      acknowledgements; improved code listings. Minor typographical
+      enhancements.</dd>
+      <dt><strong>2010-08-28</strong> First public draft</dt>
+      <dd>Document
+      ID: <a href="revisions/624c832fb523888ddfdfcae8d425e00c.pdf">624c832fb523888ddfdfcae8d425e00c</a></dd>
+      <dd>Mostly complete although the conclusion could be expanded
+      upon.</dd>
+    </dl>
+    <h2>Colophon</h2>
+    <p>Typeset in LaTeX using the article class from the KOMA-Script
+    bundle. The text font is Times Roman; the heading font is
+    Helvetica, both from the <em>txfonts</em> package; Inconsolata is
+    used as the code font. All of the figures/illustrations were
+    produced using <em>TikZ</em>.</p>
+    <div id="footer">
+      Copyright (©) 2010 by Freddie Witherden; last updated
+      2010-09-07.
+    </div>
+  </body>
+</html>

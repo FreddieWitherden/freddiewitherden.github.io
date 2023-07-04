@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>libforensic1394</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>libforensic1394</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Tools » libforensic1394
+    </div>
+    <p>An open source
+    (<a href="http://www.gnu.org/licenses/lgpl-3.0.html">GNU
+    LGPLv3+</a>) library for performing live memory forensics over the
+    IEEE 1394 (“FireWire”) interface. Currently supported under
+    GNU/Linux and Mac OS X, libforensic1394 improves upon existing
+    libraries by providing a simple and clean interface to the
+    the <em>direct memory access</em> functionality available over
+    FireWire. In addition to a C API Python bindings are also
+    available.</p>
+    <p>Further information can be found in the associated
+    paper <a href="../../pages/ieee-1394-forensics/">memory forensics
+    over the IEEE 1394 interface</a>.</p>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#news">News</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#bugs#">Bugs</a></li>
+      <li><a href="#todo">Todo</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#documentation">Documentation</a></li>
+      <li><a href="#history">History</a></li>
+    </ul>
+    <h2><a name="news">News</a></h2>
+    <h3>2010-10-05: 0.2 Released</h3>
+    <p>The first public release of libforensic1394, version 0.2, was
+    tagged earlier today. Source tarballs are available from
+    the <a href="#download">downloads</a> section.</p>
+    <h3>2010-08-03: Developer Preview</h3>
+    <p>Available through git libforensic1394 is currently feature
+    complete and undergoing extensive field testing.</p>
+    <h2><a name="features">Features</a></h2>
+    <ul>
+       <li>Support for the new “Juju” stack introduced in
+       Linux 2.6.22 and Mac OS X through IOKit.</li>
+       <li>Ability to present an SBP-2 unit directory to a remote device in
+       order to acquire physical memory access.</li>
+       <li>A high performance <em>vectorised</em> API for leveraging
+       the asynchronous capabilities of 1394 controllers.</li>
+       <li>A modern build system using CMake and CPack.</li>
+    </ul>
+    <h2><a name="bugs">Bugs</a></h2>
+    <p>A list of known bugs and limitations can be found in
+    the <a href="https://raw.githubusercontent.com/FreddieWitherden/libforensic1394/master/BUGS">BUGS</a>
+    file in the source distribution.</p>
+    <h2><a name="todo">Todo</a></h2>
+    <p>The following features can be expected in future revisions.</p>
+    <ul>
+      <li>Platform support for FreeBSD.</li>
+      <li>Platform support for Microsoft Windows using a kernel-mode
+      device driver to access 1394 devices. Requires a
+      (prohibitively) expensive cross-signing certificate. Unlikely
+      before the new year.</li>
+    </ul>
+    <h2><a name="download">Download</a></h2>
+    <h3>Git</h3>
+    <p>The latest version can always be downloaded from the projects
+    <a href="https://github.com/FreddieWitherden/libforensic1394">git repository</a>.</p>
+    <h3>Release 0.2</h3>
+    <dl>
+      <dt>Source code</dt>
+      <dd><a href="releases/libforensic1394-0.2.tar.gz">libforensic1394-0.2.tar.gz</a>
+      (57.8
+      KiB, <a href="releases/libforensic1394-0.2.tar.gz.sig">sig</a>)</dd>
+      <dd><a href="releases/libforensic1394-0.2.zip">libforensic1394-0.2.zip</a>
+      (69.4 KiB, <a href="releases/libforensic1394-0.2.zip.sig">sig</a>)</dd>
+    </dl>
+    <h2><a name="documentation">Documentation</a></h2>
+    <p>Complete <a href="docs/">Doxygen documentation</a> is available.</p>
+    <h2><a name="history">History</a></h2>
+    <p>libforensic1394 was written as a modern alternative to
+    <a href="http://www.storm.net.nz/projects/16">pythonraw1394</a> (a
+    Python wrapper
+    around <a href="http://sourceforge.net/projects/libraw1394/">libraw1394</a>)
+    featuring native support for the new “Juju” stack used by many
+    GNU/Linux distributions.</p>
+    <div id="footer">
+      Copyright (©) 2015 by Freddie Witherden; last updated 2015-02-07.
+    </div>
+  </body>
+</html>

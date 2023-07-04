@@ -1,0 +1,18 @@
+dl.book-info dt
+{
+    float: left;
+    clear: left;
+    width: 12ex;
+    margin: 0 1ex 0 0;
+    text-align: right;
+}
+
+dl.book-info dd + dd
+{
+    margin-left: 13ex;
+}
+
+dl.book-info dt:after
+{
+    content: ":";
+}

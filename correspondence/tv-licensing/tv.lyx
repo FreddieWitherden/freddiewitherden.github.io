@@ -1,0 +1,197 @@
+#LyX 1.6.4 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass letter
+\begin_preamble
+\usepackage{microtype}
+\date{March 24, 2009}
+
+\pdfinfo{
+   /Author (Freddie Witherden)
+   /CreationDate (D:20090324195600)
+   /ModDate (D:20090324195600)
+}
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding auto
+\font_roman times
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize 11
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 0
+\use_esint 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\leftmargin 4.2cm
+\rightmargin 4.2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout My Address
+Freddie Witherden
+\begin_inset Newline newline
+\end_inset
+
+Room 270
+\series bold
+A
+\series default
+, Selkirk Hall
+\begin_inset Newline newline
+\end_inset
+
+Princes Gardens, Watts Way
+\begin_inset Newline newline
+\end_inset
+
+London SW7 1LU 
+\end_layout
+
+\begin_layout Send To Address
+Carl Shimeild
+\begin_inset Newline newline
+\end_inset
+
+TV Licensing
+\begin_inset Newline newline
+\end_inset
+
+Bristol BS98 1TL 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Red fields are mandatory, green ones optional.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Signature
+Freddie Witherden
+\end_layout
+
+\begin_layout Opening
+Dear Mr.
+ Shimeild,
+\end_layout
+
+\begin_layout Standard
+I am writing to you in response of your letter, received on the 24th of
+ March 2009, ref: 3110570576STU, not because it deserves a reply but because
+ it is so factually incorrect and riddled with frivolous assumptions that
+ not replying would amount a crime in itself.
+\end_layout
+
+\begin_layout Standard
+Let me begin by stating, without equivocation or a Salmon of doubt, that
+ I have no interest whatsoever in purchasing or buying a TV license on account
+ that I do not watch television at my current address.
+\end_layout
+
+\begin_layout Standard
+With the formalities now out of the way I will begin by addressing the first
+ line of your letter, which reads ``We have tried to contact you several
+ times between September 2008 and February 2009 about buying a TV license,
+ and haven't received your response.
+\begin_inset Quotes erd
+\end_inset
+
+ I am unsure what the TV licensing definition of 
+\emph on
+contact
+\emph default
+ is but it is clearly incongruous with the objective vernacular.
+ This is the first correspondence which I have received from TV licensing
+ since moving in on the 4th of October 2008.
+\end_layout
+
+\begin_layout Standard
+While I can only speculate if any genuine attempts were made to contact
+ me before today or if this is just `smoke and mirrors' from what is arguably
+ the most bureaucratic, officious and callous branch of 
+\emph on
+Her Majesty's Government
+\emph default
+ it is worth bearing the following two things in mind when engaging in further
+ correspondence:
+\end_layout
+
+\begin_layout Enumerate
+addressing a letter to ``the legal occupier
+\begin_inset Quotes erd
+\end_inset
+
+ is not helpful when routing mail;
+\end_layout
+
+\begin_layout Enumerate
+my room is 270
+\series bold
+A
+\series default
+ not 270.
+\end_layout
+
+\begin_layout Standard
+Further down the page the letter goes onto say ``If you do not watch TV
+ at this address, please let us known by calling 0844 800 6707.
+ We may send officers to confirm the situation.
+\begin_inset Quotes erd
+\end_inset
+
+ This passage makes the virulent assumption that one has access to a phone
+ --- which I do not.
+ Additionally the letter fails to provide 
+\series bold
+any
+\series default
+ return address whatsoever, making correspondence difficult at best.
+\end_layout
+
+\begin_layout Standard
+In lieu of sending officers would you instead consider sending a TV detector
+ van? (Of similar ilk to the ones which feature prominently in your advertising
+ campaigns.) As a physicist I would be incredibly interested to learn just
+ how this pseudo-scientific device works, if at all.
+ 
+\end_layout
+
+\begin_layout Closing
+Polemically yours,
+\end_layout
+
+\end_body
+\end_document

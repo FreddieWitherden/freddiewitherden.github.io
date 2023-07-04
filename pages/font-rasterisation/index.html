@@ -1,0 +1,957 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Treatise on Font Rasterisation</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>A Treatise on Font Rasterisation With an Emphasis on Free Software</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Pages » Treatise on Font Rasterisation
+    </div>
+    <p>Font rasterisation is, in the author’s opinion, one of the most
+    interesting fields of computer science. If music is the subjective
+    application of physics, then font rasterisation is almost
+    certainly the subjective application of computer science. The
+    purpose of this article is threefold: firstly, to provide an
+    introduction into the various methods available to aid in the
+    rasterisation process; secondly, to provide a critical analysis of
+    these methods against the needs of desktop applications; and
+    finally, to relate this analysis to free software.</p>
+    <p>Figures, in the form of bitmap images, are used extensively
+    throughout. This is done to ensure consistent results across
+    different platforms. Since some of the figures make use of
+    sub-pixel rendering, this article is best viewed on an LCD
+    screen.</p>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#introduction">Introduction</a></li>
+      <li><a href="#font-hinting">Font Hinting</a></li>
+      <li><a href="#anti-aliasing">Anti-aliasing</a></li>
+      <li><a href="#anti-aliasing-with-hinting">Combining
+      Anti-aliasing With Hinting</a></li>
+      <li><a href="#sub-pixel-rendering">Sub-pixel Rendering</a></li>
+      <li><a href="#sub-pixel-positioning">Sub-pixel
+      Positioning</a></li>
+      <li><a href="#application-requirements">Application
+      Requirements</a></li>
+      <li><a href="#windows-os-x">Windows &amp; Mac OS X</a></li>
+      <li><a href="#summary-of-techniques">Summary of
+      Techniques</a></li>
+      <li><a href="#free-software">GNU/Linux &amp; Free
+      Software</a></li>
+      <li><a href="#advice-for-distributions">Advice For
+      Distributions</a></li>
+      <li><a href="#other-resources">Other Resources</a></li>
+      <li><a href="#references">References</a></li>
+      <li><a href="#figure-notes">Figure Notes</a></li>
+      <li><a href="#revision-history">Revision History</a></li>
+    </ul>
+    <h2><a name="introduction">Introduction</a></h2>
+    <p>Before we start exploring the various methods used in font
+    rasterisation, it is important to first understand <em>why</em>
+    rasterisation is so difficult. Why should rasterisation on a
+    computer screen be any more complicated than on a printer? It all
+    comes down to resolution. Or, more precisely, the number
+    of <em>dots per inch</em> (DPI).</p>
+    <p>Printers typically start at around 300 DPI, with 600 DPI not
+    being uncommon. This means that for every inch (2.54cm), there are
+    potentially 300+ individual dots. Fonts, however, are not measured
+    in dots but instead in <em>points</em>: 1/72 of an inch. A direct
+    consequence of this is that a specific font at 10pt will have the
+    same <em>physical dimensions</em> irrespective of the DPI at which
+    it is rasterised.</p>
+    <p>Whereas printers have a relatively high DPI, computer screens
+    are typically <em>assumed</em> to be at 96 DPI, over three times
+    lower. Herein lies the difficulty with on-screen
+    rasterisation. This is best illustrated with an example: Figure 1
+    shows the letter ‘M’ in 10pt Times New Roman at 600, 300, and 96
+    DPI, respectively. Looking at the figure, it is clear that 96 DPI
+    is not sufficient to preserve the shape—or letter-form—of the
+    glyph.</p>
+    <div class="figure">
+      <img width="137" height="55" alt="M at a low DPI"
+      src="images/m-various-dpi.png" />
+      <p>Figure 1: How 10pt Times Roman looks at 600, 300, and 96
+      DPI.</p>
+    </div>
+    <p>This phenomenon can be explained using <em>information
+    theory</em>. Since glyphs contain information it is possible to
+    view them as a signal comprised of various frequencies. The
+    Nyquist–Shannon sampling theorem states that in order to
+    accurately reproduce a signal, the sampling rate needs to
+    be <em>at least twice the maximum frequency of the
+    signal</em>. Should the sampling rate be lower than this, then
+    distortions—in the form of aliasing—will be introduced. In the
+    case of rasterisation, the sampling rate corresponds directly to
+    the DPI of the output device.</p>
+    <p>An example of aliasing as a consequence of low DPI can be seen
+    in Figure 2.</p>
+    <div class="figure">
+      <img width="249" height="12" alt="Aliasing at a low DPI"
+      src="images/aliasing.png" />
+      <p>Figure 2: 10pt Times New Roman at 96 DPI. Note how some stems
+      are thicker than others, and how certain features are
+      under-/over-emphasised.</p>
+    </div>
+    <p>Since it is clear that 96 DPI is insufficient for accurate
+    rasterisation, we are left with two options. The first is to find
+    a way of <em>increasing the effective sampling rate</em> of the
+    device, while the second is to <em>reduce the frequency of the
+    glyphs to allow the use of a lower sampling rate</em>. All of the
+    methods presented in this article fall into one of these two
+    categories.</p>
+    <h2><a name="font-hinting">Font Hinting</a></h2>
+    <p>One of the oldest and mostly widely used techniques for
+    improving rasterisation quality is font hinting. Also known
+    as <em>grid fitting</em>, hinting involves modifying the shape of
+    glyphs in order to ensure they line up with the rasterisation
+    grid. By distorting the glyph so that it is aligned with the pixel
+    grid, the overall frequency is reduced. An example of font hinting
+    can be seen in Figure 3.</p>
+    <div class="figure">
+      <img width="257" height="26" alt="Un-hinted vs hinted text"
+      src="images/hinting.png" />
+      <p>Figure 3: 10pt Times New Roman at 96 DPI with (bottom) and
+      without (top) hinting. Also note the differing widths between
+      the hinted and un-hinted text.</p>
+    </div>
+    <p>The hinted text is much more consistent than its un-hinted
+    counterpart. However, this consistency comes at the price of
+    accuracy. An unavoidable consequence of warping glyphs to the
+    rasterisation grid is that their dimensions change slightly. These
+    small differences quickly add up over a line of text resulting in
+    a visible difference—such as that seen in Figure 3. The author
+    refers to this phenomenon as <em>character drift</em>.</p>
+    <p>The degree of hinting required to produce consistent output is
+    dependent on the DPI of the output device; low resolution devices
+    require more aggressive hinting than high resolution device. One
+    of the consequences of aggressive hinting—necessary as it may
+    be—is character drift. At resolutions in excess of 300 DPI, it is
+    possible to forego font hinting entirely.</p>
+    <h3>Implementation details</h3>
+    <p>Font hinting is usually achieved through one of two
+    approaches. The first of these puts the font designer in control
+    of the hinting process. This is the approach taken by the TrueType
+    font specification—without a doubt the most widespread font
+    format. In the specification, a virtual machine is used to
+    instruct the rasteriser on how to go about rendering a
+    glyph. This, in theory, gives designers <em>pixel level</em>
+    control over how glyphs are rasterised at various
+    sizes <cite><a href="#tur01a">Tur01a</a></cite>. The second
+    approach is to leave hinting up to the font rasteriser—so
+    called <em>auto-hinting</em>. When rendering non-TrueType
+    fonts—such as those in Adobe’s Type 1 format, or those that lack
+    hinting instructions—this is often the only
+    option <cite><a href="#tur01a">Tur01a</a></cite>.</p>
+    <p>In order for a meaningful comparison to be made between these
+    approaches, it is first necessary to have an understanding of some
+    of the other techniques available for improving rasterisation
+    quality.</p>
+    <h2><a name="anti-aliasing">Anti-aliasing</a></h2>
+    <p>So far, we have been assuming that pixels are bi-level, either
+    on or off, black or white. However, modern computer screens are
+    capable of displaying millions of colours, including shades of
+    grey. Font rasterisers are able to take advantage of this by using
+    a technique called <em>anti-aliasing</em>. As the name would
+    suggest, anti-aliasing is a means of avoiding the unwanted effects
+    of aliasing when sampling a high-frequency signal on a
+    low-frequency device. This is done by blurring the signal; its
+    effect is to reduce its maximal frequency.</p>
+    <p>Pixels of anti-aliased text are multi-level. That is, they can
+    be black, white, or a shade of grey. The shade of a pixel depends
+    on the percentage of the pixel that is <em>masked</em> by the
+    glyph. This concept is neatly demonstrated in Figure 4.</p>
+    <div class="figure">
+      <img width="92" height="63" alt="Primitive anti-aliasing"
+      src="images/g-anti-aliased.png" />
+      <p>Figure 4: The letter ‘g’ in 10pt Times New Roman at 672 DPI
+      (left) and 96 DPI (right). The right glyph has been rendered
+      with a (primitive) anti-aliasing algorithm and scaled by a
+      factor of 7.</p>
+    </div>
+    <p>The effect of anti-aliasing on a line of text can be seen in
+    Figure 5. Anti-aliasing does a very good job at preserving the
+    shapes of glyphs. Moreover, the anti-aliased text does not suffer
+    from character drift. However, this accuracy comes at the
+    sacrifice of clarity—the anti-aliased text has a much lower
+    contrast than its hinted counterpart.</p>
+    <div class="figure">
+      <img width="257" height="41" alt="A comparison of anti-aliased
+      text" src="images/anti-aliasing.png" />
+      <p>Figure 5: 10pt Times New Roman at 96 DPI; without
+      anti-aliasing or hinting (top), with hinting (middle), with
+      anti-aliasing (bottom).</p>
+    </div>
+    <h2><a name="anti-aliasing-with-hinting">Combining Anti-aliasing
+    With Hinting</a></h2>
+    <p>Both hinting and anti-aliasing improve the legibility of text
+    at low resolutions by making it more consistent. Hinting does this
+    at the cost of <em>accuracy</em>, while anti-aliasing does it at
+    the cost of <em>contrast</em>. At this point, the logical question
+    to ask is “can hinting and anti-aliasing be used in conjunction
+    with each other?” The answer is yes—with the appropriate finesse,
+    it is possible to hint anti-aliased text.</p>
+    <p>In principle, hinting anti-aliased text is exactly the same as
+    hinting monochromatic text. However, in practice, a different
+    implementation is required in order to produce high-quality
+    output <cite><a href="#tur01b">Tur01b</a></cite>. The practicality
+    of this depends on the hinting approach taken; it is significantly
+    easier when the hinting is performed by the font rasteriser
+    instead of a virtual machine. Indeed, naïvely combining TrueType
+    hinting with anti-aliasing can often result in a <em>reduction in
+    overall consistency</em>! This is most readily observed when
+    rendering sans-serif fonts, as can be seen in Figure 6.</p>
+    <div class="figure">
+      <img width="263" height="43" alt="Hinting and anti-aliasing
+      combined" src="images/bytecode-hinting-with-anti-aliasing.png"
+      />
+      <p>Figure 6: 10pt Arial at 96 DPI; with TrueType hinting (top),
+      with anti-aliasing (middle), with TrueType hinting and
+      anti-aliasing (bottom).</p>
+    </div>
+    <p>While the output is legible, it lacks consistency—some
+    characters, such as ‘w’ and ‘s’, are anti-aliased, while others,
+    such as ‘l’, are not. This causes some characters to appear to be
+    heavier than others. These heavier characters are often referred
+    to as being <em>dirty</em>. The undesirable characteristics
+    apparent in Figure 6 arise because the anti-aliased text is being
+    hinted <em>as if it were regular monochromatic text</em>. (Which,
+    incidentally, is why the application of anti-aliasing has no
+    effect on the overall character drift.) But as was established in
+    the previous section, anti-aliased text has a <em>lower
+    frequency</em> than monochromatic text. The solution, therefore,
+    is to use less aggressive hinting. This is quite difficult to
+    accomplish when using TrueType hinting, as the virtual machine
+    does not provide sufficient control over the hinting
+    process. However, when auto-hinting is used, this becomes a very
+    real possibility.</p>
+    <p>Figure 7 shows the auto-hinting styles provided by FreeType—a
+    popular font rasterisation library used by many free software
+    applications.</p>
+    <div class="figure">
+      <img width="277" height="58" alt="Various auto-hinting styles
+      combined with anti-aliasing"
+      src="images/auto-hinting-with-anti-aliasing.png" />
+      <p>Figure 7: 10pt Arial at 96 DPI rendered with various hinting
+      styles; from top to bottom: none, slight, medium and full. It
+      should be noted that, <em>in this particular instance</em>,
+      medium and full yield identical results.</p>
+    </div>
+    <p>Of the auto-hinting styles provided by FreeType, the slight
+    style is perhaps the most interesting. Unlike medium and full, it
+    incurs no character drift whatsoever, while still providing an
+    improvement over regular anti-aliasing. Whereas most algorithms
+    hint both the x- and y-axes, the slight style hints just the
+    y-axis. As character drift is caused by <em>cumulative error</em>
+    in glyph dimensions, it can only occur as a result of x-axis
+    hinting; hence, by just hinting the y-axis, it is possible to
+    eliminate character drift entirely. The more aggressive hinting
+    styles, medium and full, compare quite favourably to TrueType
+    hinting for many fonts.</p>
+    <p>By appropriately combining font hinting with anti-aliasing it
+    is possible to obtain the best of both worlds.</p>
+    <h2><a name="sub-pixel-rendering">Sub-pixel Rendering</a></h2>
+    <p>So far, all of the techniques we have considered have worked by
+    decreasing the spatial frequency of the text. Sub-pixel rendering,
+    also known as sub-pixel anti-aliasing, is a means of increasing
+    the effective resolution (DPI) of an LCD screen by taking
+    advantage of the way sub-pixels are arranged.</p>
+    <p>A single pixel on an LCD screen is composed of red, green, and
+    blue sub-pixels in a fixed order, usually RGB. Sub-pixel rendering
+    works by exploiting this fixed arrangement to increase the
+    effective horizontal resolution of the screen. This is made
+    possible by the fact that <em>our eyes are more sensitive to
+    differences in luminance than in chroma</em>. Therefore, two
+    adjacent sub-pixels can have a perceptibly different intensity but
+    an indistinguishable chroma (colour). However, this is only the
+    case for a finite range of sub-pixel differences: too small and
+    the intensities appear identical; too large and the differences in
+    chroma become visible.</p>
+    <p>With respect to font rasterisation, the process is roughly as
+    follows: The glyph is first rasterised at <em>three times</em> the
+    horizontal resolution (treating sub-pixels as if they were
+    bona-fide pixels), and then <em>filtered</em>—the purpose of which
+    is to ensure the aforementioned constraints on sub-pixel intensity
+    are satisfied. Finally, the filtered image is <em>mapped</em> onto
+    the appropriate sub-pixels on the screen/output device. A more
+    substantial explanation of how sub-pixel rendering works can be
+    found in <cite><a href="#gib98">Gib98</a></cite>.</p>
+    <div class="figure">
+      <img width="250" height="28" alt="Sub-pixel rendering compared
+      to regular anti-aliasing" src="images/sub-pixel-rendering.png"
+      />
+      <p>Figure 8: 10pt Times New Roman at 96 DPI with vertical
+      hinting: plain anti-aliasing (top) and sub-pixel anti-aliasing
+      (bottom).</p>
+    </div>
+    <p>As an aside, it is worth noting the distinction which exists
+    between anti-aliasing and sub-pixel rendering. The use of
+    sub-pixel rendering <em>does not</em> necessitate the use of
+    anti-aliasing. Sub-pixel rendering works, and is effective,
+    irrespective of whether the glyph being filtered has been rendered
+    (at three times the width) with anti-aliasing or not. All of the
+    examples in this section showcase sub-pixel rendering with
+    anti-aliasing. An example of sub-pixel rendering with aliased
+    glyphs can be seen in Figure 14
+    and <cite><a href="#gib98">Gib98</a></cite>. To further the
+    confusion, the filtering process is in and of itself a form of
+    anti-aliasing, meaning that post-filtering, all sub-pixel rendered
+    text is anti-aliased (and hence is described by some authors
+    as <em>colourised anti-aliasing</em>).</p>
+    <h3>The importance of filtering</h3>
+    <p>While researching for this article I discovered many
+    users—predominantly in the free software community—who prefer to
+    disable sub-pixel rendering in lieu of regular anti-aliasing. The
+    overwhelming majority do so because of a distracting and unwanted
+    phenomenon called <em>colour fringing</em>. This can be seen in
+    Figure 9. Notice how the edges of characters appear coloured.</p>
+    <div class="figure">
+      <img width="292" height="29" alt="Colour fringing"
+      src="images/colour-fringing.png" />
+      <p>Figure 9: 10pt and 12pt Times New Roman at 96 DPI
+      rendered <em>without</em> filtering—causing severe colour
+      fringing.</p>
+    </div>
+    <p>Colour fringing occurs as a result of <em>improper or
+    insufficient filtering</em>. As outlined in the previous section,
+    filtering is necessary to normalise the difference between
+    adjacent sub-pixels so that they lie within a certain range. If no
+    filtering is performed, as in Figure 9, then large differences
+    between sub-pixels can arise. An example of this can be seen by
+    looking at the 12pt letter ‘f’ in Figure 9—its left side appears
+    yellow. This is because the rightmost (blue) sub-pixel is masked
+    by the stem of the glyph, leaving just the red and green
+    sub-pixels illuminated. Since red and green combine to yellow, a
+    colour fringe is observed.</p>
+    <p>The most common solution to this is to apply a finite impulse
+    response (FIR) filter. This can be thought as a <em>weighted
+    moving average</em>, whereby the intensity of a sub-pixel is a
+    combination of it and its surrounding sub-pixels. The number of
+    sub-pixels sampled—the number of <em>taps</em>—and the weights
+    applied to these sub-pixels is implementation-specific. The
+    differences between various FIR filters can be seen in Figure
+    10.</p>
+    <div class="figure">
+      <img width="292" height="62" alt="Various FIR filters"
+      src="images/fir-filtered.png" />
+      <p>Figure 10: 12pt Times New Roman at 96 DPI. From top to
+      bottom: regular anti-aliasing; a 3-tap FIR filter with
+      coefficients [1/3, 1/3, 1/3]; a 5-tap FIR filter [1/16, 4/16,
+      7/16, 4/16, 1/16]; 5-tap FIR filter [1/9, 2/9, 3/9, 2/9,
+      1/9].</p>
+    </div>
+    <p>All three of the FIR filters in Figure 10 are successful in
+    eliminating colour fringing. However, the contrast ratio of the
+    text varies between filters—the 2nd filter (third line down)
+    produces noticeably sharper text than the other two. This is due
+    to the higher weight of 4/16 ≈ 0.44 carried by the central
+    sub-pixel, compared with 1/3 ≈ 0.33 for the other filters,
+    resulting in a greater difference between sub-pixel intensities,
+    hence a clearer letter-form. In many respects, ~0.45 is an upper
+    bound for the central sub-pixel, after which colour fringing
+    becomes a real possibility. (For comparison, the unfiltered text
+    in Figure 9 can be thought of as having coefficients [0, 0, 1, 0,
+    0].)</p>
+    <p>The three filters shown in Figure 10 were chosen because they
+    can all be found in real-world applications. The first two are
+    those provided by the FreeType library, where they are known
+    as <em>light</em> and <em>default</em>, while the third filter is
+    outlined in <cite><a href="#gib98">Gib98</a></cite>.</p>
+    <p>The FIR filter, as described above, is an <em>inter-pixel
+    filter</em>; meaning that it operates on sub-pixels
+    directly—oblivious to pixel boundaries. However, there exist
+    another class of filters which do consider pixel boundaries. Such
+    filters are known as <em>intra-pixel</em> filters. The primary
+    difference between inter- and intra-pixel filters is that
+    intra-pixel filters <em>are only effective at filtering
+    well-hinted
+    text</em> <cite><a href="#rød08">Rød08</a></cite>. This
+    restriction severely limits the scope of intra-pixel filters and
+    renders them unsuitable for many applications. Despite their
+    technical inferiority, intra-pixel filters are still the default
+    in many free software libraries—and hence are worthy of at least
+    passing reference.</p>
+    <h3>Applicability to rotated text</h3>
+    <p>Since sub-pixel rendering relies on the precise arrangement of
+    sub-pixels it is inherently anisotropic, i.e. it has a directional
+    dependency. Therefore if either the text or the screen are
+    rotated, its efficacy will be reduced.</p>
+    <p>For obvious reasons, rotated text in applications is relatively
+    uncommon. However, many high-end monitors and mobile devices
+    support rotation (so-called <em>portrait mode</em>). This rotation
+    causes the sub-pixels to be stacked vertically along the y-axis
+    instead of horizontally along the x-axis. While it is possible,
+    with appropriate support from the rasteriser, to exploit the new
+    sub-pixel arrangement, the effect is now in the vertical
+    direction. This is much less effective and produces results
+    similar to regular anti-aliasing with y-axis hinting.</p>
+    <h2><a name="sub-pixel-positioning">Sub-pixel Positioning</a></h2>
+    <p>Not to be confused with sub-pixel rendering, sub-pixel
+    positioning is a generalisation of both anti-aliasing and
+    sub-pixel rendering to <em>permit the fractional placement of
+    glyphs</em>. Thus far, all of the glyphs we have looked
+    at—including those rasterised with sub-pixel rendering—have
+    started and ended on whole pixel boundaries.</p>
+    <p>One of the reasons why text rendered with anti-aliasing appears
+    more detailed than monochromatic (black and white) text is because
+    anti-aliasing allows for strokes (lines) to have a <em>fractional
+    width</em>. This is achieved by varying the intensity of pixels,
+    as shown in Figure 4. A consequence of this is that the
+    spacing <em>between strokes</em> also becomes fractional. Hence,
+    by adding small amounts of space to the left hand side of a glyph,
+    it becomes possible to position it with sub-pixel accuracy. The
+    degree of precision provided is implementation dependent. Although
+    1/3 of a pixel is sufficient for most applications, it is
+    theoretically possible to provide a precision of 1/256 of a
+    pixel.</p>
+    <p>Figure 11 shows the word “intelligent“ rendered with sub-pixel
+    positioning. While all of the repeated characters
+    (<em>i</em>, <em>n</em>, <em>t</em>, <em>e</em> and <em>l</em>)
+    appear the same, they all, with the exception of <em>n</em>, have
+    different pixel representations. This can be seen clearly in
+    Figure 12.</p>
+    <div class="figure">
+      <img width="71" height="17" alt="Sub-pixel positioning"
+      src="images/sub-pixel-positioning.png" />
+      <p>Figure 11: 11pt Times New Roman rendered with sub-pixel
+      positioning using Quartz―the 2D graphics library of Mac OS
+      X.</p>
+    </div>
+    <div class="figure">
+      <img width="284" height="68" alt="Sub-pixel positioning"
+      src="images/sub-pixel-positioning-large.png" />
+      <p>Figure 12: Figure 11 scaled by a factor of 4.</p>
+    </div>
+    <p>The improved accuracy afforded by sub-pixel positioning
+    translates into more consistent spacing between glyphs. However,
+    as with sub-pixel rendering, there are a couple of important
+    corollaries.</p>
+    <h3>Relationship to sub-pixel rendering</h3>
+    <p>Interestingly, sub-pixel positioning does not necessitate the
+    use of sub-pixel rendering. Indeed, the technique actually
+    pre-dates the widespread adoption of sub-pixel rendering! However,
+    sub-pixel rendering does provide a convenient means of shifting a
+    glyph by either 1/3 or 2/3 of a pixel. By rasterising a
+    glyph <em>once</em>—at three times the width—then, pre-filtering,
+    inserting either one or two units of space to the left of the
+    glyph, it is possible to produce <em>all three sub-pixel
+    variants</em>. Such a technique has the desirable property of
+    requiring no explicit support from the rasteriser and can even be
+    used to sub-pixel position monochromatic text, hinted or
+    otherwise.</p>
+    <h3>Effect on glyph caches</h3>
+    <p>Rendering a glyph is a computationally intensive
+    operation. Therefore, most rasterisers save or cache the results
+    of rendering a specific glyph at a specific size. However one of
+    the consequences of sub-pixel positioning is that a glyph can
+    have <em>multiple pixel representations</em>, with each
+    representation requiring its own cache entry. This has the effect
+    of both increasing the size of the glyph cache and reducing its
+    efficiency. For example, a rasteriser supporting 1/3 pixel
+    positioning would theoretically require <em>three times</em> as
+    much memory than one not using sub-pixel positioning. It is thus
+    important that rasterisers provide a sensible degree of
+    precision.</p>
+    <h2><a name="application-requirements">Application
+    Requirements</a></h2>
+    <p>Broadly, desktop applications can be divided into one of two
+    categories: those that require <em>freely scalable</em> text and
+    those that do not. Text is said to be freely scalable if its
+    metrics are <em>linear</em> under scaling. Or, in other words, the
+    positioning and spacing of glyphs is exactly the same on screen as
+    on paper—<em>irrespective of differences in DPI</em>.</p>
+    <p>Freely scalable text is most commonly found in page layout
+    programs, such as <em>what you see is what you get</em> (WYSIWYG)
+    editors and document viewers. However, it is advantageous whenever
+    the ability to zoom or scale parts of an application is
+    desirable. (If the text were not freely scalable, then the
+    positions of glyphs would need to be recomputed upon scaling.)</p>
+    <h3>Obtaining freely scalable text</h3>
+    <p>In the previous section on rendering techniques, a strong
+    emphasis was placed on minimising character drift—and this is
+    why. For text to be freely scalable, it can not be allowed to
+    accumulate <em>any</em> character drift. Since character drift
+    arises as a result of x-axis hinting the most general way to
+    obtain freely scalable text is to avoid the use of x-axis hinting
+    entirely. Assuming that the underlying font rasterisation library
+    provides application-level support for configuring hinting, this
+    method has the advantage of being extremely simple to
+    implement. But in the case where regular application
+    text <em>is</em> hinted, the use of this method results in freely
+    scalable text having a different consistency to that of regular
+    text, c.f. Figure 7.</p>
+    <p>Although many applications require freely scalable text, a
+    sizeable proportion of them, especially word processors, require
+    it only to <em>ensure the consistency of line breaks</em>, since
+    the location of a line break should not depend on the zoom-level
+    or DPI of the output device. The only requirement for this is that
+    a given line of text not be allowed to accumulate any (inter-line)
+    character drift; intra-line drift, however, is acceptable. This
+    quasi scalable text can be obtained by adjusting the inter-word
+    spacing of regular hinted text. For example, if a piece of text
+    containing 10 words has a normalised width of 1.0, while the same
+    piece of text rendered with hinting has a width of 1.05, then
+    (1.05 - 1.0) / 10 = 0.005 units of space would be added between
+    each word. The author, idiosyncratically, refers to these spaces
+    as <em>correctional deltas</em>. Conceptually, the method
+    presented above operates in a very similar fashion to primitive
+    word justification algorithms. An in-depth analysis of the method
+    can be found in <cite><a href="#tay03">Tay03</a></cite>.</p>
+    <p>In order for the method of correctional deltas to be
+    applicable, it is necessary for the application, be it a word
+    processor or document viewer, to have a concept of <em>a line of
+    text</em>. For word processors this is no problem whatsoever; the
+    task of breaking a block of text down into lines is
+    trivial. However, many document formats, such as PDF and
+    PostScript, have no such concept. It is not uncommon for text in
+    such documents to be stored as a list of glyphs and (x, y)
+    coordinates, with no logical order per-se. (Indeed, this is one of
+    the reasons why text selection in PDF documents, especially those
+    with columns, is so haphazard.) A consequence of this is that the
+    method of correctional deltas is not universally applicable.</p>
+    <h3>The naïve approach</h3>
+    <p>Both of the methods outlined above can be used to obtain
+    attractive freely scalable text. However there is a third naïve
+    method which due to its prevalence is also worth mentioning. The
+    idea is to treat hinted text <em>as if it possesses the same
+    metrics as un-hinted text</em>. This is done by precisely
+    computing the un-hinted location of glyphs (usually at a very high
+    DPI) and then using these accurate offsets to place regular hinted
+    glyphs. As these hinted glyphs have <em>different</em> metrics it
+    is not uncommon for there to be either too little or too much
+    space between glyphs. This is readily evident in Figure 13b.</p>
+    <div class="figure">
+      <img width="653" height="151" alt="Comparison of freely scalable
+      text" src="images/freely-scalable.png" />
+      <p>Figure 13: Side-by-side comparison of the place-holder text
+      “Lorem ipsum…” in 10pt Times New Roman as rendered by the
+      multi-line text edit control of the Qt library; a) Regular
+      hinted text, not freely scalable; b) Hinted text naïvely
+      positioned as if it were freely scalable; c) Y-axis hinted text,
+      freely scalable.</p>
+    </div>
+    <p>From a purely technical standpoint, the only real legitimate
+    use for naïvely positioned text is when the underlying font
+    rasterisation library provides no support for rendering text
+    without x-axis hinting.</p>
+    <h2><a name="windows-os-x">Windows &amp; Mac OS X</a></h2>
+    <p>Windows and Mac OS X take very different approaches to font
+    rasterisation. It is hence poignant to go on a minor tangent to
+    analyse these approaches.</p>
+    <p>The font rasteriser in Windows, which dates back to the early
+    90s, makes extensive use of font hinting. This is primarily done
+    via the TrueType bytecode present in many fonts. Sub-pixel
+    rendering has been supported through
+    Microsoft’s <em>ClearType</em> technology, which was first
+    introduced with Windows XP as a disabled-by-default configuration
+    option. Several high-profile Microsoft products—including Internet
+    Explorer 7 and Microsoft Office 2003 &amp; 2007—take the liberty
+    of automatically enabling ClearType on a per-application
+    basis. With the release of Windows Vista in 2006, the status of
+    ClearType changed from being disabled-by-default to
+    enabled-by-default. In addition to this, Windows Vista also
+    included, as part of the (.NET) Windows Presentation Foundation,
+    an updated version of ClearType with support for freely scalable
+    un-hinted text and sub-pixel positioning. Windows applications not
+    using .NET are able to access this new ClearType revision through
+    the DirectWrite API which is available for Windows Vista and
+    later <cite><a href="#mic09a">Mic09a</a></cite>. Since both of
+    these technologies are very new and not well supported by older
+    versions of Windows, many applications which require freely
+    scalable text, including Adobe Reader, ship with their own font
+    rasteriser and bypass ClearType entirely.</p>
+    <p>The approach taken by Mac OS X could not be more different,
+    relying exclusively on un-hinted, freely scalable text. This is
+    achieved through an intricate combination of anti-aliasing,
+    sub-pixel rendering and sub-pixel positioning. Versions of Mac OS
+    X prior to 10.6 “Snow Leopard” allowed users to configure the
+    degree of anti-aliasing applied to on-screen text and also to
+    disable sub-pixel rendering. With the release of 10.6 Apple
+    removed most of these options in lieu of a “use LCD font smoothing
+    when available”
+    checkbox <cite><a href="#mac09">Mac09</a></cite>. Heuristics are
+    used to automatically determine if a display device supports
+    sub-pixel rendering or not.</p>
+    <p>A comparison of the Windows and Mac OS X rasterisers can be
+    seen in Figure 14. It is interesting to see how two diametrically
+    opposed approaches can both result in perfectly legible
+    output.</p>
+    <div class="figure">
+      <img width="302" height="32" alt="A comparison between Windows
+      and Mac OS X" src="images/windows-mac-os-x.png" />
+      <p>Figure 14: 12pt Times New Roman at 96 DPI sub-pixel rendered
+      with the Windows rasteriser (top) and the Mac OS X rasteriser
+      (bottom).</p>
+    </div>
+    <h3>Case study: Safari on Windows</h3>
+    <p>When Apple first released their Safari web browser for Windows
+    in June 2007, they included with it the font rasteriser from Mac
+    OS X. Being a browser, Safari has no intrinsic need for freely
+    scalable text; the choice to include a custom rasteriser was a
+    decision stylistic—rather than technical—in nature.</p>
+    <p>This choice proved to be very controversial. Several bloggers,
+    including Jeff Atwood <cite><a href="#atw07">Atw07</a></cite> and
+    Joel Spolsky <cite><a href="#spo07">Spo07</a></cite>, wrote posts
+    on the subject, often with side-by-side comparisons of the Apple
+    and Microsoft rasterisers. Not surprisingly, there was no general
+    consensus as to which was the superior. Joel Spolsky best
+    summarized the situation as:</p>
+    <blockquote>
+      <p>Now, on to the question of what people prefer. Jeff Atwood’s
+      post from yesterday comparing the two font technologies
+      side-by-side generated rather predictable heat: Apple users
+      liked Apple’s system, while Windows users liked Microsoft’s
+      system. This is not just standard fanboyism; it reflects the
+      fact that when you ask people to choose a style or design that
+      they prefer, unless they are trained, they will generally choose
+      the one that looks most familiar. In most matters of taste, when
+      you do preference surveys, you’ll find that most people don’t
+      really know what to choose, and will opt for the one that seems
+      most familiar.</p>
+    </blockquote>
+    <p>With the release of Safari 4.0 in June 2009, Apple switched to
+    using Microsoft’s ClearType rasteriser by default.</p>
+    <p>The key idea here is <em>consistency</em>. For an application
+    to be well received by users, it has to be consistent with other
+    applications on the system. Apple, however, are not the only ones
+    to fall short of user’s expectations for consistency; Microsoft
+    themselves received some criticism for font rasterisation in WPF
+    applications. Microsoft’s latest text API, DirectWrite, goes so
+    far as to allow developers to disable new ClearType functionality,
+    in order to remain consistent with legacy applications and
+    widgets <cite><a href="#mic09b">Mic09b</a></cite>.</p>
+    <h2><a name="summary-of-techniques">Summary of Techniques</a></h2>
+    <p>Before performing an in-depth analysis into font rasterisation
+    under GNU/Linux and other free software platforms, it is worth
+    summarising what has been covered thus far.</p>
+    <ul>
+      <li>Computer screens are typically <em>low DPI</em> devices, and
+      because of this, they are not well suited for displaying
+      complicated glyphs.</li>
+      <li><em>Hinting</em> is a process which <em>distorts the outline
+      of glyphs</em> to ensure that important features are aligned to
+      the <em>pixel grid</em>, allowing for them to be shown on a
+      device with a low DPI.</li>
+      <li>Hinting trades <em>accuracy for consistency</em>, and as a
+      consequence of this, hinted text <em>accumulates character
+      drift</em> with hinted glyphs, often <em>possessing different
+      metrics</em> to their un-hinted counterparts.</li>
+      <li>Hinting can be performed in either the x- or y-axes, or
+      both. For horizontal text, y-axis hinting <em>does not result in
+      character drift</em>.</li>
+      <li>Some font file formats, including the TrueType format,
+      define a minimalistic programming language to allow font
+      designers <em>direct control over the hinting process</em>. This
+      bytecode is then interpreted at runtime. Alternatively, it is
+      possible for the font rasteriser to perform the hinting itself;
+      known as auto-hinting, this works for <em>all outline
+      fonts</em>.</li>
+      <li><em>Anti-aliasing</em> is another means of displaying
+      complicated glyphs on low resolution devices.</li>
+      <li>When used on its own, anti-aliasing results in output which
+      is <em>accurate but blurred</em>, trading <em>contrast for
+      consistency and accuracy</em>.</li>
+      <li>It is possible to combine certain types of hinting with
+      anti-aliasing. The use of aggressive hinting with anti-aliasing
+      can result in a <em>reduction in overall consistency</em>.</li>
+      <li><em>Sub-pixel rendering</em> is a technique which exploits
+      the <em>physical geometry of LCD screens</em> to increase the
+      horizontal resolution of the device.</li>
+      <li>Sub-pixel text must be filtered in order to avoid <em>colour
+      fringing</em>.</li>
+      <li>Sub-pixel rendering is only suitable for on-screen
+      output. Scaling an image which contains sub-pixel rendered text
+      results in <em>visual anomalies, including colour
+      fringing</em>.</li>
+      <li>Sub-pixel positioning is a generalisation of anti-aliasing
+      and/or sub-pixel rendering to allow for <em>more accurate glyph
+      placement</em>.</li>
+      <li>Sub-pixel positioning is <em>incompatible with aggressive
+      hinting strategies</em>.</li>
+      <li>Applications such as word processors and document viewers
+      require text that is <em>freely scalable</em>. For text to be
+      freely scalable it must be <em>free from character
+      drift</em>.</li>
+      <li>Users require that not only are the glyphs which constitute
+      a line of text consistent, but also that all text displayed by
+      the application is <em>consistent with all other text on the
+      system</em>.</li>
+    </ul>
+    <h2><a name="free-software">GNU/Linux &amp; Free Software</a></h2>
+    <p>At first glance, the text rendering stack under GNU/Linux and
+    other free software platforms appears somewhat convoluted, with
+    there existing a whole quorum of libraries related to font
+    rasterisation. In this section, we will analyse the tasks
+    performed by these libraries and the problems that can arise as a
+    result of incorrect configuration.</p>
+    <h3>The stack</h3>
+    <p>On a modern GNU/Linux system the following packages have an
+    influence over the rasterisation process.</p>
+    <dl>
+      <dt>FreeType</dt>
+      <dd>Sitting at the bottom of the stack, FreeType is responsible
+      for loading font files and performing the actual
+      rasterisation. Both auto-hinting and TrueType bytecode hinting
+      are supported. Until May 2010 TrueType bytecode hinting was
+      patent encumbered. It was therefore disabled by default until
+      the 2.4 release <cite><a href="#tur10">Tur10</a></cite>. The
+      FreeType auto-hinter is fully configurable. More recent versions
+      (since 2.3) provide an LCD filtering interface to perform
+      sub-pixel filtering. As with bytecode hinting, this
+      functionality is also covered by several software
+      patents <cite><a href="#tur07">Tur07</a></cite> and so is also
+      disabled by default. FreeType supports rendering glyphs with
+      sub-pixel positioning.</dd>
+      <dt>Fontconfig</dt>
+      <dd>Provides an interface for font discovery and
+      configuration. From the standpoint of rasterisation, fontconfig
+      is responsible for controlling options such as whether hinting
+      should be used, what type of hinting (if any) should be used,
+      whether sub-pixel rendering should be used, &amp;c. Users
+      interact with fontconfig through a series of XML-based
+      configuration files.</dd>
+      <dt>Cairo</dt>
+      <dd>A 2D vector graphics library that, under GNU/Linux, uses
+      FreeType for rasterisation. Cairo is used by all applications
+      based off of the GTK+ toolkit and Mozilla-based web browsers,
+      including Firefox. As Cairo gained support for sub-pixel
+      rendering before FreeType most versions of Cairo perform the
+      filtering stage themselves using a built-in intra-pixel
+      filter. There are plans to switch to the FreeType filtering
+      interface in a future version. No support is currently provided
+      for sub-pixel positioning.</dd>
+      <dt>Qt</dt>
+      <dd>The primary widget toolkit of KDE. Like Cairo, Qt also uses
+      FreeType for rasterisation. Since 4.5 Qt has been able to take
+      advantage of the FreeType filtering interface where available,
+      falling back to its own FIR filter
+      otherwise <cite><a href="#rød08">Rød08</a></cite>. There is
+      currently no support for sub-pixel positioning when running
+      under GNU/Linux.</dd>
+      <dt>Xft</dt>
+      <dd>An X11 centric interface to FreeType. Current versions
+      feature the same intra-pixel filter as Cairo, with no support
+      for either the FreeType filtering interface or sub-pixel
+      positioning. Seldom used as of 2009.</dd>
+    </dl>
+    <h3>PDF rendering with Poppler</h3>
+    <p>The two most popular PDF viewers under GNU/Linux, Evince (GTK+,
+    GNOME) and Okular (Qt, KDE), are both frontends to the Poppler PDF
+    rendering library. However, despite this, the two applications
+    sometimes produce very different output for the same
+    document. This is because the Poppler library has two rendering
+    backends: a legacy one derived from the Xpdf 3.0 codebase
+    (referred to as Splash) as used by Okular, and a newer Cairo
+    backend which is used by Evince. While the output produced by the
+    Cairo backend is generally of superior quality to that produced by
+    the Splash backend, it is not currently possible to access the
+    Cairo backend from Qt due to ‘toolkit
+    politics’ <cite><a href="#cid09">Cid09</a></cite>.</p>
+    <p>When rendering PDF documents on screen, it is necessary to use
+    freely scalable text. This means that it is necessary to disable
+    x-axis font hinting when rendering the document. However, for some
+    reason unbeknown to the author, the Cairo backend for Poppler
+    disables font hinting entirely, including y-axis font
+    hinting—which is <em>beneficial to rendering quality</em>!
+    Moreover, the renderer also <em>disables sub-pixel rendering if
+    enabled</em>. For users or distributions that have chosen to
+    enable sub-pixel rendering, this results in PDF documents being
+    rendered in a sub-optimal fashion.</p>
+    <p>Patches are available both to make the Cairo backend available
+    for Qt applications and to facilitate the use of y-axis hinting
+    and sub-pixel rendering.</p>
+    <h2><a name="advice-for-distributions">Advice For
+    Distributions</a></h2>
+    <p>As was alluded to in the previous section the blind building
+    and distribution of several upstream packages will result in
+    output which, on many systems, is inconsistent and
+    sub-optimal. Thankfully, all of the aforementioned issues can be
+    rectified by patching the offending packages. The patches
+    presented in this section have been tested extensively by both
+    myself and others—with many already being carried by GNU/Linux
+    distributions.</p>
+    <p>It is the hope of the author that these patches will eventually
+    be merged upstream.</p>
+    <h3>Recommended patches</h3>
+    <dl>
+      <dt>FreeType</dt>
+      <dd>For sub-pixel rendering to function correctly it is
+      necessary to enable the patent encumbered LCD filtering
+      API. Many distributions, including Debian, do this already and
+      is generally not a problem.</dd>
+      <dt>Fontconfig</dt>
+      <dd>The current source tarballs for fontconfig are missing
+      several important configuration files, including:
+        <ul>
+          <li>10-antialiasing.conf</li>
+          <li>10-hinting.conf</li>
+          <li>10-hinting-[slight, medium, full].conf</li>
+          <li>11-lcd-filter-lcddefault.conf</li>
+        </ul>
+      </dd>
+      <dd>It is hence recommended that distributions patch fontconfig
+      to include these files. Ubuntu have included such a patch-set
+      since 8.04, Hardy Heron.</dd>
+      <dt>Cairo</dt>
+      <dd>Versions of Cairo before the 1.10 release use their own
+      intra-pixel filter. As of 2009 there are <em>two</em> sets of
+      patches available that update legacy releases of Cairo to use an
+      FIR inter-pixel filter. The first set pre-dates the filtering
+      interface in FreeType and uses a custom FIR filter with the
+      coefficients outlined
+      in <cite><a href="#gib98">Gib98</a></cite>. The <a href="http://david.freetype.org/lcd/">second
+      set of patches</a>, by David Turner, take advantage of the
+      FreeType filtering interface.</dd>
+      <dd>It is recommended that distributions upgrade to Cairo 1.10
+      where at all possible.</dd>
+      <dt>Qt</dt>
+      <dd>Versions of Qt since 4.5 <em>require no patching
+      whatsoever</em> and will automatically use the FreeType
+      filtering interface when available. As Qt3 uses Xft for
+      rasterisation under GNU/Linux it does not require any explicit
+      patching.</dd>
+      <dt>Xft</dt>
+      <dd>As with legacy releases of Cairo there exist two patch sets
+      for Xft: one using a custom FIR filter and a second using the
+      FreeType filtering interface. The guidance for distributions is
+      to apply the newer patch-set.</dd>
+      <dt>Poppler</dt>
+      <dd>While there do exist a series of patches to Poppler to clean
+      up the Cairo backend and to make it available to Qt applications
+      the patches, in the opinion of the author, are not yet ready for
+      prime time. The patches are currently maintained by Paul Dann
+      in <a href="http://github.com/giddie/poppler-qt4-cairo-backend">his
+      git repository</a>.</dd>
+    </dl>
+    <h2><a name="other-resources">Other Resources</a></h2>
+    <p>The following articles, although not referenced directly in the
+    text, were found to be useful by the author while researching the
+    topic of font rasterisation.</p>
+    <ul>
+      <li><a href="http://www.antigrain.com/research/font_rasterization/index.html">Texts
+      Rasterization Exposures</a> by Maxim Shemanarev. A well
+      thought-out, although occasionally misguided, article on font
+      rasterisation with an heavy emphasis on obtaining freely
+      scalable output. A point-by-point analysis by David Turner, the
+      lead developer of FreeType, can be found on
+      the <a href="http://lists.gnu.org/archive/html/freetype/2007-07/msg00007.html">FreeType
+      mailing list</a>.</li>
+      <li><a href="http://dmedia.dprogramming.com/?n=Tutorials.TextRendering1">Text
+      rendering</a> by Tomasz Stachowiak. Although primarily a
+      tutorial on how to use FreeType and OpenGL in D it presents a
+      very interesting technique for obtaining crisp sub-pixel
+      rendered text.</li>
+      <li><a href="http://slangkamp.wordpress.com/2009/09/29/kword-font-rendering">KWord
+      font rendering</a> by Sven Langkamp. The blog post which
+      prompted me to write this treatise. The included screen shots of
+      KWord are a good example of the <em>naïve approach</em> to
+      obtaining freely scalable text—and an even better example of why
+      it should be avoided.</li>
+      <li><a href="http://behdad.org/text/">State of Text
+      Rendering</a> by Behdad Esfahbod. An impeccable reference on the
+      ‘other half’ of the free software stack; covering topics such as
+      complex text shaping and OpenType.</li>
+    </ul>
+    <h2><a name="references">References</a></h2>
+    <dl>
+      <dt><a name="tur01a">Tur01a</a></dt>
+      <dd>David Turner</dd>
+      <dd>The FreeType Auto-Hinting pages; available data &amp; information</dd>
+      <dd><a href="http://www.freetype.org/autohinting/data.html">http://www.freetype.org/autohinting/data.html</a></dd>
+      <dt><a name="tur01b">Tur01b</a></dt>
+      <dd>David Turner</dd>
+      <dd>The FreeType Auto-Hinting pages; background information</dd>
+      <dd><a href="http://www.freetype.org/autohinting/background.html">http://www.freetype.org/autohinting/background.html</a></dd>
+      <dt><a name="gib98">Gib98</a></dt>
+      <dd>Steve Gibson</dd>
+      <dd>Sub-Pixel Font Rendering Technology</dd>
+      <dd><a href="http://www.grc.com/cleartype.htm">http://www.grc.com/cleartype.htm</a></dd>
+      <dt><a name="rød08">Rød08</a></dt>
+      <dd>Samuel Rødal</dd>
+      <dd>Subpixel antialiasing on X11</dd>
+      <dd><a href="http://labs.trolltech.com/blogs/2008/09/01/subpixel-antialiasing-on-x11/">http://labs.trolltech.com/blogs/2008/09/01/subpixel-antialiasing-on-x11/</a></dd>
+      <dt><a name="tay03">Tay03</a></dt>
+      <dd>Owen Taylor</dd>
+      <dd>Rendering good looking text with resolution-independent
+      layout; a hybrid approach to grid-fitting</dd>
+      <dd><a href="http://people.redhat.com/otaylor/grid-fitting/">http://people.redhat.com/otaylor/grid-fitting/</a></dd>
+      <dt><a name="mic09a">Mic09a</a></dt>
+      <dd>Microsoft Corporation</dd>
+      <dd>DirectWrite; run-time requirements</dd>
+      <dd><a href="http://msdn.microsoft.com/en-us/library/dd368038(VS.85).aspx">http://msdn.microsoft.com/en-us/library/dd368038(VS.85).aspx</a></dd>
+      <dt><a name="mac09">Mac09</a></dt>
+      <dd>MacInTouch, Inc</dd>
+      <dd>Mac OS X 10.6 Snow Leopard FAQ; Miscellaneous questions</dd>
+      <dd><a href="http://www.macintouch.com/specialreports/snowleopard/slfaq.html">http://www.macintouch.com/specialreports/snowleopard/slfaq.html</a></dd>
+      <dt><a name="mic09b">Mic09b</a></dt>
+      <dd>Microsoft Corporation</dd>
+      <dd>Introducing DirectWrite; improved text rendering with
+      ClearType</dd>
+      <dd><a href="http://msdn.microsoft.com/en-us/library/dd371554(VS.85).aspx">http://msdn.microsoft.com/en-us/library/dd371554(VS.85).aspx</a></dd>
+      <dt><a name="atw07">Atw07</a></dt>
+      <dd>Jeff Atwood</dd>
+      <dd>What’s Wrong With Apple’s Font Rendering?</dd>
+      <dd><a href="http://www.codinghorror.com/blog/archives/000884.html">http://www.codinghorror.com/blog/archives/000884.html</a></dd>
+      <dd>Font Rendering: Respecting The Pixel Grid</dd>
+      <dd><a href="http://www.codinghorror.com/blog/archives/000885.html">http://www.codinghorror.com/blog/archives/000885.html</a></dd>
+      <dt><a name="spo07">Spo07</a></dt>
+      <dd>Joel Spolsky</dd>
+      <dd>Font smoothing, anti-aliasing, and sub-pixel rendering</dd>
+      <dd><a href="http://www.joelonsoftware.com/items/2007/06/12.html">http://www.joelonsoftware.com/items/2007/06/12.html</a></dd>
+      <dt><a name="tur07">Tur07</a></dt>
+      <dd>David Turner</dd>
+      <dd>ClearType patents, FreeType and the Unix desktop</dd>
+      <dd><a href="http://david.freetype.org/cleartype-patents.html">http://david.freetype.org/cleartype-patents.html</a></dd>
+      <dt><a name="tur10">Tur10</a></dt>
+      <dd>David Turner</dd>
+      <dd>FreeType and patents; the TrueType patents</dd>
+      <dd><a href="http://www.freetype.org/patents.html">http://www.freetype.org/patents.html</a></dd>
+      <dt><a name="cid09">Cid09</a></dt>
+      <dd>Albert Astals Cid</dd>
+      <dd>Cairo Backend for Qt Wrapper</dd>
+      <dd><a href="http://lists.freedesktop.org/archives/poppler/2009-June/004855.html">http://lists.freedesktop.org/archives/poppler/2009-June/004855.html</a></dd>
+      <dd>FreeDesktop Bugzilla – Bug 25240</dd>
+      <dd><a href="https://bugs.freedesktop.org/show_bug.cgi?id=25240">http://bugs.freedesktop.org/show_bug.cgi?id=25240</a></dd>
+    </dl>
+    <h2><a name="figure-notes">Figure Notes</a></h2>
+    <p>Most of the figures presented in this article were rendered by
+    the FreeType backend to Cairo; with text layout being performed by
+    the Pango layout library.</p>
+    <dl>
+      <dt>Figure 4, anti-aliased ‘g’</dt>
+      <dd>The anti-aliased glyph was produced by down-scaling the 672
+      DPI glyph to 96 DPI in The GIMP using <em>Sinc (Lanczos3)</em>
+      interpolation. This was then subsequently up-scaled to 672 DPI
+      using <em>nearest neighbour</em> interpolation to demonstrate
+      the effect of anti-aliasing.</dd>
+      <dt>Figure 9, colour fringing</dt>
+      <dd>A modified version of FreeType, with FIR coefficients of [0,
+      0, 1, 0, 0], was used to produce raw un-filtered text.</dd>
+      <dt>Figure 11, sub-pixel positioning</dt>
+      <dd>A cropped screen capture of <em>TextEdit</em> running under
+      Mac OS X 10.5.</dd>
+      <dt>Figure 14, Windows and Mac OS X</dt>
+      <dd>Produced by stitching together the output of Internet
+      Explorer 8 and Safari 3.2 running under Windows XP SP3.</dd>
+    </dl>
+    <h2><a name="revision-history">Revision History</a></h2>
+    <dl>
+      <dt><strong>2010-09-15</strong></dt>
+      <dd>Updated the article to reflect the expiration of all
+      TrueType related patents in July of this year. The guidance for
+      distributions is updated to cover Cairo 1.10.</dd>
+      <dt><strong>2009-12-29</strong></dt>
+      <dd>Included figure notes; improved references; corrected some
+       minor typos.</dd>
+      <dt><strong>2009-12-27</strong></dt>
+      <dd>First public release; sections DPI selection and font
+      configuration dialogs of GNOME and KDE remain incomplete.</dd>
+    </dl>
+    <div id="footer">
+      Copyright (©) 2010 by Freddie Witherden; last updated: 2010-9-15.
+    </div>
+  </body>
+</html>

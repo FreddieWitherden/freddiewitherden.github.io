@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Double Pendulum Simulator</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="../../styles/main.css" type="text/css" charset="utf-8" />
+  </head>
+  <body>
+    <h1>Double Pendulum Simulator</h1>
+    <div id="breadcrumbs">
+      <a href="../../">Home</a> » Tools » Double Pendulum Simulator
+    </div>
+    <p><em>Double pendulum</em> is an open source (<a href="http://gplv3.fsf.org/">GNU GPLv3+</a>) application to visualise the chaotic motion of double pendula. It is written in C++ using the Qt toolkit and runs under all operating systems supported by Qt.</p>
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#news">News</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#screenshots">Screenshots</a></li>
+      <li><a href="#bugs">Bugs</a></li>
+      <li><a href="#todo">Todo</a></li>
+      <li><a href="#download">Download</a></li>
+      <li><a href="#history">History</a></li>
+    </ul>
+    <h2><a name="news">News</a></h2>
+    <h3>2009-11-01: Update on 0.3</h3>
+    <p>Version 0.3, which should be available by the end of the year, is coming along nicely. Although I don't expect there to be many new features it does sport a more polished interface and smaller executable size.</p>
+    <h3>2009-05-07: 0.2 Released</h3>
+    <p>Version 0.2 is released. Last-minute features include:</p>
+    <ul>
+      <li>improvements to the colour picker so that it works correctly under Linux and Windows;</li>
+      <li>an improved icon for the pendulum selection box which makes it easier to recognise pendulums;</li>
+      <li>greatly reduced executable size under Windows;</li>
+      <li>use of the Runge-Kutta (RK4) solver by default;</li>
+      <li>a more informative about dialog.</li>
+    </ul>
+    <h3>2009-05-03: Update on 0.2</h3>
+    <p>Version 0.2 is progressing well and should be ready near the end of next week. Highlights:</p>
+    <ul>
+      <li>the simulation speed is no longer frame rate dependent;</li>
+      <li>current simulation time and frame rate are now displayed in the status bar;</li>
+      <li>support for zooming in/out of the pendulum view;</li>
+      <li>several minor GUI bugs squished.</li>
+    </ul>
+    <h3>2009-04-08: First public release</h3>
+    <p>This is the first public release of double pendulum. Source and binaries can be found from the <a href="#download">download</a> section.</p>
+    <h2><a name="features">Features</a></h2>
+    <p>As of version 0.1 double pendulum supports:</p>
+    <ul>
+      <li>simulation of an arbitary number of double pendula;</li>
+      <li>customisable starting conditions for each pendulum;</li>
+      <li>Euler and fourth order Runge-Kutta (RK4) solvers, with the solver and timestep being configurable on a per-pendulum basis.</li>
+    </ul>
+    <h2><a name="screenshots">Screenshots</a></h2>
+    <ul class="image-list">
+      <li>
+        <a href="images/doublependulum-0.2-winxp.png"><img src="images/doublependulum-0.2-winxp-thumb.png" width="350" height="307" alt="Double pendulum 0.2 under Windows XP" /></a><br />
+        Version 0.2 running under Windows XP.
+      </li>
+      <li>
+        <a href="images/doublependulum-0.1-kde4.png"><img src="images/doublependulum-0.1-kde4-thumb.png" width="355" height="330" alt="Double pendulum 0.1 under KDE 4.2" /></a><br />
+        Version 0.1 running under KDE 4.2.
+      </li>
+      <li>
+        <a href="images/doublependulum-0.1-osx.png"><img src="images/doublependulum-0.1-osx-thumb.png" width="350" height="300" alt="Double pendulum 0.1 under OS X Leopard" /></a><br />
+        Version 0.1 running under OS X Leopard showcasing two pendula mid-swing.
+      </li>
+    </ul>
+    <h2><a name="bugs">Bugs</a></h2>
+    <p>The follwing bugs are known to exist in version 0.1.</p>
+    <h3>Animation may not be real-time</h3>
+    <p>If the system can not maintain the required frame-rate (60 FPS) then the simulation will start to lag. A system which can only manage 30 FPS will run the simulation twice as slowly as it would occur in real life. This should be fixed in version 0.2.</p>
+    <h3>The width of the <em>pendulum settings</em> dock changes under KDE</h3>
+    <p>When running under KDE (4.2) with the default style changing the active pendulum (done via the drop-down menu) will have the effect of increasing the minimum width of the dock. This occurs every time the active pendulum is changed. Cause currently unknown but has only been witnessed with the default KDE theme. This is fixed as of KDE 4.2.4.</p>
+    <h2><a name="todo">Todo</a></h2>
+    <p>The following features — time permitting — can be expected in future versions:</p>
+    <ul>
+      <li>support for more ODE solvers; namely the <em>symplectic Euler</em> and <em>Verlet integration</em> methods;</li>
+      <li>the ability to simulate a <em>double rod pendulum</em> where the mass is distributed throughout the connecting rod;</li>
+      <li>export functionality to allow for the creation of animations.</li>
+    </ul>
+    <h2><a name="download">Download</a></h2>
+    <h3>Git</h3>
+    <p>The latest version can always be downloaded from the projects <a href="https://github.com/FreddieWitherden/double-pendulum">git repository</a>.</p>
+    <h3>Version 0.2 — 2009-05-07</h3>
+    <dl>
+      <dt>Source code.</dt>
+      <dd><a href="releases/doublependulum-0.2-src.zip">.zip</a> — 210 KiB</dd>
+      <dd><a href="releases/doublependulum-0.2-src.tar.gz">.tar.gz</a> — 187 KiB</dd>
+    </dl>
+    <h3>Version 0.1 — 2009-04-08</h3>
+    <dl>
+      <dt>Source code.</dt>
+      <dd><a href="releases/doublependulum-0.1-src.zip">.zip</a> — 188 KiB</dd>
+      <dd><a href="releases/doublependulum-0.1-src.tar.gz">.tar.gz</a> — 176 KiB</dd>
+    </dl>
+    <h2><a name="history">History</a></h2>
+    <p>The program was originally written in early 2009 as part of my first year physics computing lab at Imperial College London. Since then several bugs have been fixed and new features implemented.</p>
+    <p>The double pendulum was also the subject of my lab report for the cycle. Although somewhat idiosyncratic it does provide a reasonable explanation of the chaotic nature of a double pendulum, the algorithms that can be used to simulate it and how they can be verified. The report can be found — warts and all — in PDF format <a href="report.pdf">here</a>. (For those who are interested the final mark for the report was 25/25.)</p>
+    <div id="footer">
+      Copyright (©) 2023 by Freddie Witherden; last updated 2023-01-17.
+    </div>
+  </body>
+</html>
